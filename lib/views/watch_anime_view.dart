@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import '../graphql/queries/graphql_queries.dart';
+import 'package:video_player/video_player.dart';
+import 'package:chewie/chewie.dart';
+
+import '../widgets/video_player_view.dart';
 
 class WatchAnimeView extends StatefulWidget {
   const WatchAnimeView({super.key});
@@ -13,6 +17,7 @@ class _WatchAnimeViewState extends State<WatchAnimeView> {
   final _queries = Queries();
   String _args = '';
   bool toogleDescription = true;
+  String videoUrl = '';
 
   @override
   Widget build(BuildContext context) {
@@ -61,19 +66,23 @@ class _WatchAnimeViewState extends State<WatchAnimeView> {
             final anime = result.data!['anime'];
             final image = anime!['thumbnail']['url'];
             final title = anime['title'];
-            final episodesNumber = anime['epsodios'].length;
+            final episodes = anime['epsodios'];
             final description = anime['description'];
-            print(description);
 
             return Column(
               children: [
                 ClipRRect(
-                  child: Image.network(
-                    image,
-                    height: 180,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
+                  child: videoUrl.isEmpty
+                      ? Image.network(
+                          image,
+                          height: 180,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        )
+                      : VideoPlayerView(
+                          url: videoUrl,
+                          dataSourceType: DataSourceType.network,
+                        ),
                 ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
@@ -94,7 +103,7 @@ class _WatchAnimeViewState extends State<WatchAnimeView> {
                   child: Align(
                     alignment: Alignment.topLeft,
                     child: Text(
-                      'English - $episodesNumber Episodes',
+                      'English - ${episodes.length} Episodes',
                       style: const TextStyle(
                         color: Colors.white70,
                         fontSize: 12.0,
@@ -118,7 +127,7 @@ class _WatchAnimeViewState extends State<WatchAnimeView> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(14, 0, 20, 15),
+                  padding: const EdgeInsets.fromLTRB(14, 0, 20, 0),
                   child: Align(
                     alignment: Alignment.topLeft,
                     child: TextButton(
@@ -136,24 +145,47 @@ class _WatchAnimeViewState extends State<WatchAnimeView> {
                     ),
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(14, 0, 20, 0),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(22, 0, 20, 0),
                   child: Align(
-                      alignment: Alignment.topLeft,
-                      child: ListTile(
-                        leading: Icon(
-                          Icons.ac_unit,
-                          color: Colors.white,
-                        ),
-                        title: Text(
-                          'EP1',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        trailing: Icon(
-                          Icons.play_arrow,
-                          color: Colors.white,
-                        ),
-                      )),
+                    alignment: Alignment.topLeft,
+                    child: SizedBox(
+                      height: 40,
+                      width: 400,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 10),
+                            child: SizedBox(
+                              width: 70,
+                              height: 30,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  final urlvideo =
+                                      anime['epsodios'][index]['mp4']['url'];
+                                  setState(() {
+                                    videoUrl = '';
+                                  });
+                                  setState(() {
+                                    videoUrl = urlvideo;
+                                  });
+                                },
+                                child: Row(
+                                  children: [
+                                    Text('${index + 1}'),
+                                    const SizedBox(width: 5),
+                                    const Icon(Icons.play_arrow),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                        itemCount: episodes.length,
+                      ),
+                    ),
+                  ),
                 ),
               ],
             );

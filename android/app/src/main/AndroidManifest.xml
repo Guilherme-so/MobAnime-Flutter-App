@@ -1,5 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.mobanime.mobanime">
+    <uses-permission android:name="android.permission.INTERNET"/>
    <application
         android:label="mobanime"
         android:name="${applicationName}"
