@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import '../graphql/queries/graphql_queries.dart';
 import 'package:video_player/video_player.dart';
-import 'package:chewie/chewie.dart';
-
 import '../widgets/video_player_view.dart';
+import '../core/models/anime_model.dart';
 
 class WatchAnimeView extends StatefulWidget {
   const WatchAnimeView({super.key});
@@ -63,18 +62,15 @@ class _WatchAnimeViewState extends State<WatchAnimeView> {
               );
             }
 
-            final anime = result.data!['anime'];
-            final image = anime!['thumbnail']['url'];
-            final title = anime['title'];
-            final episodes = anime['epsodios'];
-            final description = anime['description'];
+            AnimeModel data = AnimeModel.fromJson(result.data!['anime']);
+            print(data);
 
             return Column(
               children: [
                 ClipRRect(
                   child: videoUrl.isEmpty
                       ? Image.network(
-                          image,
+                          data.thumbnail!.url!,
                           height: 180,
                           width: double.infinity,
                           fit: BoxFit.cover,
@@ -89,7 +85,7 @@ class _WatchAnimeViewState extends State<WatchAnimeView> {
                   child: Align(
                     alignment: Alignment.topLeft,
                     child: Text(
-                      title,
+                      data.title!,
                       style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w400,
@@ -103,7 +99,7 @@ class _WatchAnimeViewState extends State<WatchAnimeView> {
                   child: Align(
                     alignment: Alignment.topLeft,
                     child: Text(
-                      'English - ${episodes.length} Episodes',
+                      'English - ${data.epsodios!.length} Episodes',
                       style: const TextStyle(
                         color: Colors.white70,
                         fontSize: 12.0,
@@ -116,7 +112,7 @@ class _WatchAnimeViewState extends State<WatchAnimeView> {
                   child: Align(
                     alignment: Alignment.topLeft,
                     child: Text(
-                      description,
+                      data.description!,
                       maxLines: toogleDescription ? 6 : 100,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
@@ -163,7 +159,7 @@ class _WatchAnimeViewState extends State<WatchAnimeView> {
                               child: ElevatedButton(
                                 onPressed: () {
                                   final urlvideo =
-                                      anime['epsodios'][index]['mp4']['url'];
+                                      data.epsodios![index].mp4!.url!;
                                   setState(() {
                                     videoUrl = '';
                                   });
@@ -182,7 +178,7 @@ class _WatchAnimeViewState extends State<WatchAnimeView> {
                             ),
                           );
                         },
-                        itemCount: episodes.length,
+                        itemCount: data.epsodios!.length,
                       ),
                     ),
                   ),
