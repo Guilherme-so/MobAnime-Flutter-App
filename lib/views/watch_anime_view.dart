@@ -63,7 +63,6 @@ class _WatchAnimeViewState extends State<WatchAnimeView> {
             }
 
             AnimeModel data = AnimeModel.fromJson(result.data!['anime']);
-            print(data);
 
             return Column(
               children: [

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:mobanime/core/models/anime_model.dart';
 import 'package:mobanime/views/watch_anime_view.dart';
 import 'package:mobanime/service/graphql_config.dart';
 import 'constants/routes.dart';
@@ -80,9 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Text("No animes found"),
             );
           }
-
           final animes = result.data!['animes'];
-
           return Column(
             children: [
               Padding(
